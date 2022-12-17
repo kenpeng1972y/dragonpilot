@@ -10,7 +10,7 @@ from selfdrive.modeld.constants import T_IDXS
 #          model predictions above this speed can be unpredictable
 V_CRUISE_MAX = 145  # kph
 V_CRUISE_MIN = 8  # kph
-V_CRUISE_ENABLE_MIN = 40  # kph
+V_CRUISE_ENABLE_MIN = 30  # kph
 V_CRUISE_INITIAL = 255  # kph
 
 MIN_SPEED = 1.0
@@ -87,7 +87,7 @@ def update_v_cruise(v_cruise_kph, v_ego, gas_pressed, buttonEvents, button_timer
         break
 
   if button_type:
-    v_cruise_delta = v_cruise_delta * (5 if long_press else 1)
+    v_cruise_delta = v_cruise_delta * (10 if long_press else 1)
     if long_press and v_cruise_kph % v_cruise_delta != 0:  # partial interval
       v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](v_cruise_kph / v_cruise_delta) * v_cruise_delta
     else:
