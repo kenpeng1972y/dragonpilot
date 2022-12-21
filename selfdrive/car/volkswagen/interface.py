@@ -50,7 +50,7 @@ class CarInterface(CarInterfaceBase):
       # It is documented in a four-part blog series:
       #   https://blog.willemmelching.nl/carhacking/2022/01/02/vw-part1/
       # Panda ALLOW_DEBUG firmware required.
-      ret.dashcamOnly = True
+      #ret.dashcamOnly = True
 
     else:
       # Set global MQB parameters
@@ -137,7 +137,7 @@ class CarInterface(CarInterfaceBase):
     elif candidate == CAR.SHARAN_MK2:
       ret.mass = 1639 + STD_CARGO_KG
       ret.wheelbase = 2.92
-      ret.minEnableSpeed = 30 * CV.KPH_TO_MS
+      #ret.minEnableSpeed = 30 * CV.KPH_TO_MS
       ret.minSteerSpeed = 50 * CV.KPH_TO_MS
       ret.steerActuatorDelay = 0.2
 
