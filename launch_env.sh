@@ -15,6 +15,8 @@ if [ -z "$PASSIVE" ]; then
 fi
 
 export STAGING_ROOT="/data/safe_staging"
+export SKIP_FW_QUERY=1
+export FINGERPRINT="VOLKSWAGEN SHARAN 2ND GEN"
 
 ### dp_stock_begin ###
 if [ -f /data/media/0/dp_nav_mapbox_token ]; then
