@@ -85,6 +85,26 @@
         <source>Prevent large data uploads when on a metered connection</source>
         <translation>데이터 요금제 연결 시 대용량 데이터 업로드를 방지합니다</translation>
     </message>
+    <message>
+        <source>Hidden Network</source>
+        <translation>숨겨진 네트워크</translation>
+    </message>
+    <message>
+        <source>CONNECT</source>
+        <translation>연결됨</translation>
+    </message>
+    <message>
+        <source>Enter SSID</source>
+        <translation>SSID 입력</translation>
+    </message>
+    <message>
+        <source>Enter password</source>
+        <translation>비밀번호를 입력하세요</translation>
+    </message>
+    <message>
+        <source>for &quot;%1&quot;</source>
+        <translation>&quot;%1&quot;에 접속하려면 비밀번호가 필요합니다</translation>
+    </message>
 </context>
 <context>
     <name>AnnotatedCameraWidget</name>
@@ -110,19 +130,19 @@
     </message>
     <message>
         <source>km</source>
-        <translation type="unfinished">km</translation>
+        <translation type="obsolete">km</translation>
     </message>
     <message>
         <source>m</source>
-        <translation type="unfinished">m</translation>
+        <translation type="obsolete">m</translation>
     </message>
     <message>
         <source>mi</source>
-        <translation type="unfinished">mi</translation>
+        <translation type="obsolete">mi</translation>
     </message>
     <message>
         <source>ft</source>
-        <translation type="unfinished">ft</translation>
+        <translation type="obsolete">ft</translation>
     </message>
 </context>
 <context>
@@ -156,10 +176,6 @@
     <message>
         <source>When enabled, openpilot lateral Control will be always on when ACC MAIN is ON.
 Reboot required.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable Lane Priority Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -421,10 +437,6 @@ Reboot Required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>When enabled, openpilot will use lane lines for lateral control, fallback to laneless mode automatically when lane lines probabilities are low.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Lane Change Assist Activate Speed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -439,19 +451,6 @@ Off = Disable lane change assistance.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Only When Drive Above</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All Speed - Use Lane Line when available.
-*Number* - Use Lane Line when available and drive speed is above the *number*.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable krkeegan Tune (SNG Boost)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -459,10 +458,6 @@ Off = Disable lane change assistance.
         <source>When enabled, it will apply an offset to get_stopped_equivalence_factor in longitudinal MPC resulting in an early demand for acceleration.
 Activate only when speed belows 27 km/h.
 Credit to krkeegen: https://github.com/krkeegan/</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable Smooth Braking</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -495,6 +490,14 @@ Credit to FrogaAi: https://github.com/FrogAi/FrogPilot/</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Display Tesla-style Rainbow Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When enabled, openpilot driving path will be replaced with rainbow path and color will change based on the speed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Disable OnRoad Upload</source>
         <translation type="unfinished"></translation>
     </message>
@@ -510,6 +513,52 @@ Reboot required.</source>
     <message>
         <source>When enabled, openpilot will display navigation in full screen.
 Reboot required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Cruise Speed Override</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When enabled, openpilot will let you set your cruise speed below vehicle standard. (usually at 26~40 km/h).
+Reboot Required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Override Speed When Below</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Override feature will be enabled when set cruise speed is lower than this value.
+1 km/h = 0.62 mph.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset dragonpilot settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>RESET</source>
+        <translation type="unfinished">초기화</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to reset all dp settings?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation type="unfinished">초기화</translation>
+    </message>
+    <message>
+        <source>Enable Auto Lane Change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When enabled, openpilot automatically lane change when possible(WARNING: USE IT AT YOUR OWN RISK!!!!).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>*α* Enable Smooth Braking</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -961,6 +1010,10 @@ Reboot required.</source>
         <source>comma prime</source>
         <translation>comma prime</translation>
     </message>
+    <message>
+        <source>✓ ENABLED</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -971,10 +1024,6 @@ Reboot required.</source>
     <message>
         <source>Exit</source>
         <translation>종료</translation>
-    </message>
-    <message>
-        <source>dashcam</source>
-        <translation>블랙박스</translation>
     </message>
     <message>
         <source>openpilot</source>
@@ -1046,14 +1095,14 @@ Reboot required.</source>
         <translation>데이터 파티션을 마운트할 수 없습니다. 파티션이 손상되었을 수 있습니다. 모든 설정을 삭제하고 장치를 초기화하려면 확인을 누르세요.</translation>
     </message>
     <message>
-        <source>Press confirm to erase all content and settings. Press cancel to resume boot.</source>
-        <translation>모든 콘텐츠와 설정을 삭제하려면 확인을 누르세요. 계속 부팅하려면 취소를 누르세요.</translation>
-    </message>
-    <message>
         <source>Resetting device...
 This may take up to a minute.</source>
         <translation>장치를 초기화하는 중...
 최대 1분이 소요될 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>System reset triggered. Press confirm to erase all content and settings. Press cancel to resume boot.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

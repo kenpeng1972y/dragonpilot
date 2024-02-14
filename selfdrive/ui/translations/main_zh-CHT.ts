@@ -20,19 +20,19 @@
     <name>AccelButton</name>
     <message>
         <source>OP</source>
-        <translation type="unfinished"></translation>
+        <translation>預設</translation>
     </message>
     <message>
         <source>ECO</source>
-        <translation type="unfinished">節能</translation>
+        <translation>節能</translation>
     </message>
     <message>
         <source>NOR</source>
-        <translation type="unfinished">一般</translation>
+        <translation>一般</translation>
     </message>
     <message>
         <source>SPT</source>
-        <translation type="unfinished">運動</translation>
+        <translation>運動</translation>
     </message>
 </context>
 <context>
@@ -85,6 +85,26 @@
         <source>Prevent large data uploads when on a metered connection</source>
         <translation>防止使用行動網路上傳大量的數據</translation>
     </message>
+    <message>
+        <source>Hidden Network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CONNECT</source>
+        <translation type="unfinished">雲端服務</translation>
+    </message>
+    <message>
+        <source>Enter SSID</source>
+        <translation type="unfinished">輸入 SSID</translation>
+    </message>
+    <message>
+        <source>Enter password</source>
+        <translation type="unfinished">輸入密碼</translation>
+    </message>
+    <message>
+        <source>for &quot;%1&quot;</source>
+        <translation type="unfinished">給 &quot;%1&quot;</translation>
+    </message>
 </context>
 <context>
     <name>AnnotatedCameraWidget</name>
@@ -110,19 +130,19 @@
     </message>
     <message>
         <source>km</source>
-        <translation>km</translation>
+        <translation type="vanished">km</translation>
     </message>
     <message>
         <source>m</source>
-        <translation>m</translation>
+        <translation type="vanished">m</translation>
     </message>
     <message>
         <source>mi</source>
-        <translation>mi</translation>
+        <translation type="vanished">mi</translation>
     </message>
     <message>
         <source>ft</source>
-        <translation>ft</translation>
+        <translation type="vanished">ft</translation>
     </message>
 </context>
 <context>
@@ -156,11 +176,12 @@
     <message>
         <source>When enabled, openpilot lateral Control will be always on when ACC MAIN is ON.
 Reboot required.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，當 ACC 開關開啟時，openpilot 橫向控制將始終開啟。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Enable Lane Priority Mode</source>
-        <translation>啟用線道優先模式</translation>
+        <translation type="vanished">啟用線道優先模式</translation>
     </message>
     <message>
         <source>Ctrl - Longitudinal</source>
@@ -178,7 +199,9 @@ Reboot required.</source>
         <source>When enabled, openpilot will disable device temperature check.
 **NOTED** An overheated device may result in random shutdowns or lag.
 Reboot required.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，openpilot 將停用溫度檢查。
+**注意** 過熱的設備可能會導致隨機關機或延遲。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Enable Auto Shutdown</source>
@@ -187,7 +210,8 @@ Reboot required.</source>
     <message>
         <source>When enabled, openpilot will shutdown the device automatically.
 Reboot required.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，openpilot 將自動關閉裝置。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Miscellaneous</source>
@@ -201,7 +225,9 @@ Reboot required.</source>
         <source>When enabled, you will be able to access log data using browser through port 9000.
 Needs to be in the same network. (e.g. LAN)
 Reboot required.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，您將能夠使用瀏覽器透過連接埠 9000 存取日誌資料。
+需要在同一個網路中。 (例如區域網路)
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Standard</source>
@@ -213,11 +239,11 @@ Reboot required.</source>
     </message>
     <message>
         <source>MAIN</source>
-        <translation type="unfinished"></translation>
+        <translation>MAIN</translation>
     </message>
     <message>
         <source>OP</source>
-        <translation type="unfinished"></translation>
+        <translation>OP</translation>
     </message>
     <message>
         <source>Off</source>
@@ -233,28 +259,33 @@ MAIN - When ACC MAIN is on, the display will be off (excl. warning).
 OP - When OP is enabled, the display will be off (excl. warning).
 Off - the display will be off completely (incl. warning).
 Reboot required.</source>
-        <translation type="unfinished"></translation>
+        <translation>上路 - 駕駛時，螢幕將關閉 (警告除外)。
+MAIN - 當 ACC 開關開啟時，螢幕將關閉 (警告除外)。
+OP - 啟用 OP 時，螢幕將關閉 (警告除外)。
+關閉 - 螢幕將完全關閉 (包括警告)。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>警告</translation>
     </message>
     <message>
         <source>Audible Alert Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>聲音警報模式</translation>
     </message>
     <message>
         <source>Warning - Only emits sound when there is a warning.
 Off - Does not emit any sound at all.</source>
-        <translation type="unfinished"></translation>
+        <translation>警告 - 僅在出現警告時發出聲音。
+關閉 - 完全不發出任何聲音。</translation>
     </message>
     <message>
         <source>Auto Shutdown In</source>
-        <translation type="unfinished"></translation>
+        <translation>自動關機於</translation>
     </message>
     <message>
         <source>Adjust your shutdown waiting period.</source>
-        <translation type="unfinished"></translation>
+        <translation>調整關機等待時間。</translation>
     </message>
     <message>
         <source> mins</source>
@@ -276,7 +307,9 @@ Off - Does not emit any sound at all.</source>
         <source>When enabled, openpilot will stop sending standstill signal when the car is fully stopped.
 ONLY WORK ON SOME VEHICLES.
 Reboot Required.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，當汽車完全停止時，openpilot 將停止發送停止訊號。
+僅適用於某些車輛。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Enable Enhanced BSM</source>
@@ -287,7 +320,10 @@ Reboot Required.</source>
 Tested on Prius TSS2 and RAV4 TSS1.
 ONLY WORK ON SOME VEHICLES.
 Reboot Required.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，openpilot 將使用偵錯 CAN 訊息來接收未過濾的 BSM 訊號，從而允許偵測更多物件。
+在 Prius TSS2 和 RAV4 TSS1 上進行了測試。
+僅適用於某些車輛。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Enable Door Auto Locking</source>
@@ -296,7 +332,8 @@ Reboot Required.</source>
     <message>
         <source>When enabled, openpilot will attempt to lock the doors when drive above 10 km/h (6.2 mph).
 Reboot Required.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，當行駛速度超過 10 公里/小時 (6.2 英里/小時) 時，openpilot 將嘗試鎖上車門。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Enable Door Auto Unlocking</source>
@@ -305,7 +342,8 @@ Reboot Required.</source>
     <message>
         <source>When enabled, openpilot will attempt to unlock the doors when shift to gear P.
 Reboot Required.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，openpilot 將在 P 檔時嘗試解鎖車門。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Road Edge Detection</source>
@@ -314,18 +352,22 @@ Reboot Required.</source>
     <message>
         <source>When enabled, openpilot will block lane change if road edge is detected.
 Reboot required.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，如果偵測到道路邊緣，openpilot 將停止變換車道。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Enable TACO Tune</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用 TACO 優化</translation>
     </message>
     <message>
         <source>When enabled, openpilot will use slow down for turns from taco2 branch.
 See https://github.com/commaai/openpilot/commit/7b97ddb3aacb222bfaf0b978c49cb5b756903ef7 for more information.
 This is tune for KIA EV6 and may not work on your vehicle.
 Reboot required.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，openpilot 將使用 taco2 分支模式，在轉彎時減速。
+有關更多信息，請參閱 https://github.com/commaai/openpilot/commit/7b97ddb3aacb222bfaf0b978c49cb5b756903ef7。
+這是針對 KIA EV6 的調整，可能不適用於您的車輛。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Enable Dynamic Following</source>
@@ -333,7 +375,7 @@ Reboot required.</source>
     </message>
     <message>
         <source>When enabled, openpilot will dynamically adjust following distance based on your &quot;Driving Personality&quot; setting.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，openpilot 將根據您的設定動態調整跟車距離。</translation>
     </message>
     <message>
         <source>Enable Dynamic End-to-End Longitudinal Control</source>
@@ -342,7 +384,8 @@ Reboot required.</source>
     <message>
         <source>When enabled, openpilot will dynamically change between End-to-End or ACC mode.
 Your vehicle must support openpilot longitudinal control.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，openpilot 將在 e2e 或 ACC 模式之間動態切換。
+您的車輛必須支援 openpilot 縱向控制。</translation>
     </message>
     <message>
         <source>Enable Turn Speed Control - Vision</source>
@@ -350,7 +393,7 @@ Your vehicle must support openpilot longitudinal control.</source>
     </message>
     <message>
         <source>When enabled, openpilot will use path predictions from camera vision to estimate the appropriate speed to drive through turns ahead.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，openpilot 將使用攝影機視覺的路徑預測來估計通過前方轉彎的適當速度。</translation>
     </message>
     <message>
         <source>ECO</source>
@@ -366,14 +409,17 @@ Your vehicle must support openpilot longitudinal control.</source>
     </message>
     <message>
         <source>Acceleration Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>自訂加速模式</translation>
     </message>
     <message>
         <source>OP - Stock tune.
 ECO - Eco tune.
 NOR - Normal tune.
 SPT - Sport tune.</source>
-        <translation type="unfinished"></translation>
+        <translation>OP - 預設模式。
+ECO - 節能模式。
+NOR - 一般模式。
+SPT - 運動模式。</translation>
     </message>
     <message>
         <source>*α* Enable Otisserv</source>
@@ -381,7 +427,7 @@ SPT - Sport tune.</source>
     </message>
     <message>
         <source>When enabled, you will be able to access some features remotely through dragonpilot.org.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，您將能夠透過 dragonpilot.org 遠端存取某些功能。</translation>
     </message>
     <message>
         <source>*α* Enable NOO Voice Guidance</source>
@@ -389,17 +435,19 @@ SPT - Sport tune.</source>
     </message>
     <message>
         <source>When enabled and NOO is active, dragonpilot will audibly instruct the driver when and where to turn.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用且 NOO 處於活動狀態時，dragonpilot 將透過語音提示駕駛員何時何地轉彎。</translation>
     </message>
     <message>
         <source>Enable Enhanced longitudinal Tune</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用增強縱向調教</translation>
     </message>
     <message>
-        <source>When enabled, TSS2 car will use special tune which will result in smoother and natural breaking. Works best with accel dynamic follow + accel profile. 
+        <source>When enabled, TSS2 car will use special tune which will result in smoother and natural breaking. Works best with accel dynamic follow + accel profile.
 ONLY FOR TSS2.
 Reboot Required.</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">啟用後，TSS2汽車將使用特殊調教，這將導致更平滑和自然的煞車。 與 [動態調整車距] 及 [自訂加速模式] 配合使用效果最佳。
+僅適用於 TSS2。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Enable Zorro-Steering-Sensor (ZSS) Support</source>
@@ -409,7 +457,9 @@ Reboot Required.</source>
         <source>When enabled, openpilot will use sensor outputs from ZSS for more accurate steering control.
 DO NOT ENABLE unless you have ZSS installed.
 Reboot Required.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，openpilot 將使用 ZSS 的感測器輸出來實現更準確的轉向控制。
+除非安裝了 ZSS，否則請勿啟用。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Enable Stock Longitudinal Control</source>
@@ -418,52 +468,124 @@ Reboot Required.</source>
     <message>
         <source>When enabled, openpilot will not handle longitudinal control.
 Reboot Required.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>When enabled, openpilot will use lane lines for lateral control, fallback to laneless mode automatically when lane lines probabilities are low.</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，openpilot 將不處理縱向控制。
+需要重新啟動。</translation>
     </message>
     <message>
         <source>Lane Change Assist Activate Speed</source>
-        <translation type="unfinished"></translation>
+        <translation>變換車道輔助啟動速度</translation>
     </message>
     <message>
         <source>Adjust the lane change assist activate speed.
 Off = Disable lane change assistance.
 1 mph = 1.6 kph</source>
-        <translation type="unfinished"></translation>
+        <translation>調整變換車道輔助啟動速度。
+關閉 = 停用變換車道輔助。
+1 mph = 1.6 kph</translation>
     </message>
     <message>
         <source> kph</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Only When Drive Above</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All Speed - Use Lane Line when available.
-*Number* - Use Lane Line when available and drive speed is above the *number*.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All Speed</source>
-        <translation type="unfinished"></translation>
+        <translation> kph</translation>
     </message>
     <message>
         <source>Enable krkeegan Tune (SNG Boost)</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用 krkeegan 調教(SNG Boost)</translation>
     </message>
     <message>
         <source>When enabled, it will apply an offset to get_stopped_equivalence_factor in longitudinal MPC resulting in an early demand for acceleration.
 Activate only when speed belows 27 km/h.
 Credit to krkeegen: https://github.com/krkeegan/</source>
-        <translation type="unfinished"></translation>
+        <translation>啟用後，它將對縱向 MPC 中的 get_stopped_equivalence_factor 應用偏移量，從而導致早期的加速需求。
+僅當速度低於 27 公里/小時時啟動。
+感謝 krkeegen：https://github.com/krkeegan/</translation>
     </message>
     <message>
         <source>Enable Smooth Braking</source>
+        <translation type="vanished">啟用平穩煞車</translation>
+    </message>
+    <message>
+        <source>When enabled, Smoother Braking Behind Lead More natural braking behavior when coming up to a slower vehicle.
+Credit to FrogaAi: https://github.com/FrogAi/FrogPilot/</source>
+        <translation type="vanished">啟用後，後部煞車更平穩，在接近速度較慢的車輛時煞車行為更自然。
+感謝 FrogaAi：https://github.com/FrogAi/FrogPilot/</translation>
+    </message>
+    <message>
+        <source>On-Screen Personality Button</source>
+        <translation>車距按鈕</translation>
+    </message>
+    <message>
+        <source>When enabled, openpilot will display an on-screen personality button.</source>
+        <translation>啟用後，openpilot 將在螢幕上顯示車距按鈕。</translation>
+    </message>
+    <message>
+        <source>On-Screen Accel Button</source>
+        <translation>加速模式按鈕</translation>
+    </message>
+    <message>
+        <source>When enabled, openpilot will display an on-screen accel profile button.</source>
+        <translation>啟用後，openpilot 將在螢幕上顯示加速模式按鈕。</translation>
+    </message>
+    <message>
+        <source>Display Flight Panel</source>
+        <translation>顯示飛行面板</translation>
+    </message>
+    <message>
+        <source>When enabled, openpilot will show information such as pitch angle, altitude, compass on the driving screen.</source>
+        <translation>啟用後，openpilot 將在駕駛畫面上顯示俯仰角、高度、指南針等資訊。</translation>
+    </message>
+    <message>
+        <source>Disable OnRoad Upload</source>
+        <translation>停用駕駛時上傳</translation>
+    </message>
+    <message>
+        <source>When enabled, openpilot will not upload driving log/videos to comma connect when driving.
+Reboot required.</source>
+        <translation type="vanished">啟用後，openpilot 在駕駛時不會將駕駛日誌/影片上傳到 comma connect。
+需要重新啟動。</translation>
+    </message>
+    <message>
+        <source>Display Full Screen Navigation</source>
+        <translation>顯示全螢幕導航</translation>
+    </message>
+    <message>
+        <source>When enabled, openpilot will display navigation in full screen.
+Reboot required.</source>
+        <translation>啟用後，openpilot 將顯示全螢幕導航。
+需要重新啟動。</translation>
+    </message>
+    <message>
+        <source>Enable Cruise Speed Override</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When enabled, openpilot will let you set your cruise speed below vehicle standard. (usually at 26~40 km/h).
+Reboot Required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Override Speed When Below</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Override feature will be enabled when set cruise speed is lower than this value.
+1 km/h = 0.62 mph.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset dragonpilot settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>RESET</source>
+        <translation type="unfinished">重設</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to reset all dp settings?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation type="unfinished">重設</translation>
     </message>
     <message>
         <source>When enabled, Smoother Braking Behind Lead More natural braking behavior when coming up to a slower vehicle. 
@@ -471,31 +593,11 @@ Credit to FrogaAi: https://github.com/FrogAi/FrogPilot/</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>On-Screen Personality Button</source>
+        <source>Display Tesla-style Rainbow Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>When enabled, openpilot will display an on-screen personality button.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>On-Screen Accel Button</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>When enabled, openpilot will display an on-screen accel profile button.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display Flight Panel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>When enabled, openpilot will show information such as pitch angle, altitude, compass on the driving screen.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Disable OnRoad Upload</source>
+        <source>When enabled, openpilot driving path will be replaced with rainbow path and color will change based on the speed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -504,12 +606,21 @@ Reboot required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Display Full Screen Navigation</source>
+        <source>When enabled, TSS2 car will use special tune which will result in smoother and natural breaking. Works best with accel dynamic follow + accel profile. 
+ONLY FOR TSS2.
+Reboot Required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>When enabled, openpilot will display navigation in full screen.
-Reboot required.</source>
+        <source>Enable Auto Lane Change</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When enabled, openpilot automatically lane change when possible(WARNING: USE IT AT YOUR OWN RISK!!!!).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>*α* Enable Smooth Braking</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -691,7 +802,7 @@ Reboot required.</source>
     </message>
     <message>
         <source>Error displaying tmux output.</source>
-        <translation type="unfinished"></translation>
+        <translation>顯示 tmux 輸出時發生錯誤。</translation>
     </message>
 </context>
 <context>
@@ -909,15 +1020,15 @@ Reboot required.</source>
     <name>PersonalityButton</name>
     <message>
         <source>Aggressive</source>
-        <translation type="unfinished">積極</translation>
+        <translation>積極</translation>
     </message>
     <message>
         <source>Standard</source>
-        <translation type="unfinished">標準</translation>
+        <translation>標準</translation>
     </message>
     <message>
         <source>Relaxed</source>
-        <translation type="unfinished">舒適</translation>
+        <translation>舒適</translation>
     </message>
 </context>
 <context>
@@ -961,6 +1072,10 @@ Reboot required.</source>
         <source>comma prime</source>
         <translation>comma 高級會員</translation>
     </message>
+    <message>
+        <source>✓ ENABLED</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -974,7 +1089,7 @@ Reboot required.</source>
     </message>
     <message>
         <source>dashcam</source>
-        <translation>行車記錄器</translation>
+        <translation type="vanished">行車記錄器</translation>
     </message>
     <message>
         <source>openpilot</source>
@@ -1047,13 +1162,17 @@ Reboot required.</source>
     </message>
     <message>
         <source>Press confirm to erase all content and settings. Press cancel to resume boot.</source>
-        <translation>按下確認以刪除所有內容及設定。按下取消來繼續開機。</translation>
+        <translation type="vanished">按下確認以刪除所有內容及設定。按下取消來繼續開機。</translation>
     </message>
     <message>
         <source>Resetting device...
 This may take up to a minute.</source>
         <translation>設備重設中…
 這可能需要一分鐘的時間。</translation>
+    </message>
+    <message>
+        <source>System reset triggered. Press confirm to erase all content and settings. Press cancel to resume boot.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

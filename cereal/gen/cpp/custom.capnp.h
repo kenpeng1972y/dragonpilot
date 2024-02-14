@@ -6,10 +6,14 @@
 #include <capnp/generated-header-support.h>
 #include <kj/windows-sanity.h>
 
-#if CAPNP_VERSION != 8000
+#ifndef CAPNP_VERSION
+#error "CAPNP_VERSION is not defined, is capnp/generated-header-support.h missing?"
+#elif CAPNP_VERSION != 1000002
 #error "Version mismatch between generated code and library headers.  You must use the same version of the Cap'n Proto compiler and library."
 #endif
 
+
+CAPNP_BEGIN_HEADER
 
 namespace capnp {
 namespace schemas {
@@ -112,15 +116,15 @@ struct ControlsStateExt {
   };
 };
 
-struct CustomReserved4 {
-  CustomReserved4() = delete;
+struct NavInstructionExt {
+  NavInstructionExt() = delete;
 
   class Reader;
   class Builder;
   class Pipeline;
 
   struct _capnpPrivate {
-    CAPNP_DECLARE_STRUCT_HEADER(80ae746ee2596b11, 0, 0)
+    CAPNP_DECLARE_STRUCT_HEADER(80ae746ee2596b11, 0, 4)
     #if !CAPNP_LITE
     static constexpr ::capnp::_::RawBrandedSchema const* brand() { return &schema->defaultBrand; }
     #endif  // !CAPNP_LITE
@@ -668,9 +672,9 @@ private:
 };
 #endif  // !CAPNP_LITE
 
-class CustomReserved4::Reader {
+class NavInstructionExt::Reader {
 public:
-  typedef CustomReserved4 Reads;
+  typedef NavInstructionExt Reads;
 
   Reader() = default;
   inline explicit Reader(::capnp::_::StructReader base): _reader(base) {}
@@ -685,6 +689,18 @@ public:
   }
 #endif  // !CAPNP_LITE
 
+  inline bool hasVoiceDistance() const;
+  inline  ::capnp::Text::Reader getVoiceDistance() const;
+
+  inline bool hasVoiceDirection() const;
+  inline  ::capnp::Text::Reader getVoiceDirection() const;
+
+  inline bool hasIconDistance() const;
+  inline  ::capnp::Text::Reader getIconDistance() const;
+
+  inline bool hasIconDirection() const;
+  inline  ::capnp::Text::Reader getIconDirection() const;
+
 private:
   ::capnp::_::StructReader _reader;
   template <typename, ::capnp::Kind>
@@ -697,9 +713,9 @@ private:
   friend class ::capnp::Orphanage;
 };
 
-class CustomReserved4::Builder {
+class NavInstructionExt::Builder {
 public:
-  typedef CustomReserved4 Builds;
+  typedef NavInstructionExt Builds;
 
   Builder() = delete;  // Deleted to discourage incorrect usage.
                        // You can explicitly initialize to nullptr instead.
@@ -713,6 +729,34 @@ public:
   inline ::kj::StringTree toString() const { return asReader().toString(); }
 #endif  // !CAPNP_LITE
 
+  inline bool hasVoiceDistance();
+  inline  ::capnp::Text::Builder getVoiceDistance();
+  inline void setVoiceDistance( ::capnp::Text::Reader value);
+  inline  ::capnp::Text::Builder initVoiceDistance(unsigned int size);
+  inline void adoptVoiceDistance(::capnp::Orphan< ::capnp::Text>&& value);
+  inline ::capnp::Orphan< ::capnp::Text> disownVoiceDistance();
+
+  inline bool hasVoiceDirection();
+  inline  ::capnp::Text::Builder getVoiceDirection();
+  inline void setVoiceDirection( ::capnp::Text::Reader value);
+  inline  ::capnp::Text::Builder initVoiceDirection(unsigned int size);
+  inline void adoptVoiceDirection(::capnp::Orphan< ::capnp::Text>&& value);
+  inline ::capnp::Orphan< ::capnp::Text> disownVoiceDirection();
+
+  inline bool hasIconDistance();
+  inline  ::capnp::Text::Builder getIconDistance();
+  inline void setIconDistance( ::capnp::Text::Reader value);
+  inline  ::capnp::Text::Builder initIconDistance(unsigned int size);
+  inline void adoptIconDistance(::capnp::Orphan< ::capnp::Text>&& value);
+  inline ::capnp::Orphan< ::capnp::Text> disownIconDistance();
+
+  inline bool hasIconDirection();
+  inline  ::capnp::Text::Builder getIconDirection();
+  inline void setIconDirection( ::capnp::Text::Reader value);
+  inline  ::capnp::Text::Builder initIconDirection(unsigned int size);
+  inline void adoptIconDirection(::capnp::Orphan< ::capnp::Text>&& value);
+  inline ::capnp::Orphan< ::capnp::Text> disownIconDirection();
+
 private:
   ::capnp::_::StructBuilder _builder;
   template <typename, ::capnp::Kind>
@@ -723,9 +767,9 @@ private:
 };
 
 #if !CAPNP_LITE
-class CustomReserved4::Pipeline {
+class NavInstructionExt::Pipeline {
 public:
-  typedef CustomReserved4 Pipelines;
+  typedef NavInstructionExt Pipelines;
 
   inline Pipeline(decltype(nullptr)): _typeless(nullptr) {}
   inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
@@ -1642,5 +1686,143 @@ inline void ControlsStateExt::Builder::setAlkaEnabled(bool value) {
       ::capnp::bounded<1>() * ::capnp::ELEMENTS, value);
 }
 
+inline bool NavInstructionExt::Reader::hasVoiceDistance() const {
+  return !_reader.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS).isNull();
+}
+inline bool NavInstructionExt::Builder::hasVoiceDistance() {
+  return !_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::Text::Reader NavInstructionExt::Reader::getVoiceDistance() const {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_reader.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS));
+}
+inline  ::capnp::Text::Builder NavInstructionExt::Builder::getVoiceDistance() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS));
+}
+inline void NavInstructionExt::Builder::setVoiceDistance( ::capnp::Text::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::set(_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS), value);
+}
+inline  ::capnp::Text::Builder NavInstructionExt::Builder::initVoiceDistance(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::init(_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS), size);
+}
+inline void NavInstructionExt::Builder::adoptVoiceDistance(
+    ::capnp::Orphan< ::capnp::Text>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::adopt(_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::Text> NavInstructionExt::Builder::disownVoiceDistance() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS));
+}
+
+inline bool NavInstructionExt::Reader::hasVoiceDirection() const {
+  return !_reader.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS).isNull();
+}
+inline bool NavInstructionExt::Builder::hasVoiceDirection() {
+  return !_builder.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::Text::Reader NavInstructionExt::Reader::getVoiceDirection() const {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_reader.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS));
+}
+inline  ::capnp::Text::Builder NavInstructionExt::Builder::getVoiceDirection() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_builder.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS));
+}
+inline void NavInstructionExt::Builder::setVoiceDirection( ::capnp::Text::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::set(_builder.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS), value);
+}
+inline  ::capnp::Text::Builder NavInstructionExt::Builder::initVoiceDirection(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::init(_builder.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS), size);
+}
+inline void NavInstructionExt::Builder::adoptVoiceDirection(
+    ::capnp::Orphan< ::capnp::Text>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::adopt(_builder.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::Text> NavInstructionExt::Builder::disownVoiceDirection() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(_builder.getPointerField(
+      ::capnp::bounded<1>() * ::capnp::POINTERS));
+}
+
+inline bool NavInstructionExt::Reader::hasIconDistance() const {
+  return !_reader.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS).isNull();
+}
+inline bool NavInstructionExt::Builder::hasIconDistance() {
+  return !_builder.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::Text::Reader NavInstructionExt::Reader::getIconDistance() const {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_reader.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS));
+}
+inline  ::capnp::Text::Builder NavInstructionExt::Builder::getIconDistance() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_builder.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS));
+}
+inline void NavInstructionExt::Builder::setIconDistance( ::capnp::Text::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::set(_builder.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS), value);
+}
+inline  ::capnp::Text::Builder NavInstructionExt::Builder::initIconDistance(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::init(_builder.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS), size);
+}
+inline void NavInstructionExt::Builder::adoptIconDistance(
+    ::capnp::Orphan< ::capnp::Text>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::adopt(_builder.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::Text> NavInstructionExt::Builder::disownIconDistance() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(_builder.getPointerField(
+      ::capnp::bounded<2>() * ::capnp::POINTERS));
+}
+
+inline bool NavInstructionExt::Reader::hasIconDirection() const {
+  return !_reader.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS).isNull();
+}
+inline bool NavInstructionExt::Builder::hasIconDirection() {
+  return !_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS).isNull();
+}
+inline  ::capnp::Text::Reader NavInstructionExt::Reader::getIconDirection() const {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_reader.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS));
+}
+inline  ::capnp::Text::Builder NavInstructionExt::Builder::getIconDirection() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::get(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS));
+}
+inline void NavInstructionExt::Builder::setIconDirection( ::capnp::Text::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::set(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS), value);
+}
+inline  ::capnp::Text::Builder NavInstructionExt::Builder::initIconDirection(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::init(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS), size);
+}
+inline void NavInstructionExt::Builder::adoptIconDirection(
+    ::capnp::Orphan< ::capnp::Text>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::Text>::adopt(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS), kj::mv(value));
+}
+inline ::capnp::Orphan< ::capnp::Text> NavInstructionExt::Builder::disownIconDirection() {
+  return ::capnp::_::PointerHelpers< ::capnp::Text>::disown(_builder.getPointerField(
+      ::capnp::bounded<3>() * ::capnp::POINTERS));
+}
+
 }  // namespace
+
+CAPNP_END_HEADER
 

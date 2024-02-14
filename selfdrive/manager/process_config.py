@@ -51,7 +51,7 @@ procs = [
   NativeProcess("proclogd", "system/proclogd", ["./proclogd"], only_onroad),
   PythonProcess("logmessaged", "system.logmessaged", always_run),
   PythonProcess("micd", "system.micd", iscar),
-  PythonProcess("timezoned", "system.timezoned", always_run, enabled=not PC),
+  PythonProcess("timed", "system.timed", always_run, enabled=not PC),
 
   PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", driverview, enabled=(not PC or WEBCAM)),
   NativeProcess("encoderd", "system/loggerd", ["./encoderd"], only_onroad),
@@ -91,9 +91,9 @@ procs = [
 
   # dp
   NativeProcess("otisserv", "selfdrive/dragonpilot", ['./otisserv'], always_run),
-  
+
   # gpxd
-  PythonProcess("gpxd", "selfdrive.dragonpilot.gpxd", only_onroad),
+  #PythonProcess("gpxd", "selfdrive.dragonpilot.gpxd", only_onroad),
   # PythonProcess("gpx_uploader", "selfdrive.dragonpilot.gpx_uploader", always_run),
   PythonProcess("dpdmonitoringd", "selfdrive.dragonpilot.dpdmonitoringd", only_onroad, enabled=not PC),
   NativeProcess("fileserv", "selfdrive/dragonpilot", ['./fileserv'], always_run),

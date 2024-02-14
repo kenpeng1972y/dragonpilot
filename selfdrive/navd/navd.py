@@ -21,6 +21,14 @@ REROUTE_DISTANCE = 25
 MANEUVER_TRANSITION_THRESHOLD = 10
 REROUTE_COUNTER_MIN = 3
 
+# rick - used by nav instruction
+MILE_TO_KM = 1.609344
+KM_TO_MILE = 1. / MILE_TO_KM
+# MS_TO_KPH = 3.6
+# MS_TO_MPH = MS_TO_KPH * KM_TO_MILE
+METER_TO_MILE = KM_TO_MILE / 1000.0
+METER_TO_FOOT = 3.28084
+
 
 class RouteEngine:
   def __init__(self, sm, pm):
@@ -59,6 +67,36 @@ class RouteEngine:
         self.mapbox_token = ""
       self.mapbox_host = "https://maps.comma.ai"
 
+
+    # rick - cached
+    self._dp_cached_instruction = None
+    self._dp_is_metric = self.params.get_bool("IsMetric")
+    self._dp_nav_instruction_voice_lang = self.configure_nav_instruction_voice_language()
+    self._dp_is_rhd_detected = self.params.get_bool("IsRhdDetected")
+
+  def configure_nav_instruction_voice_language(self):
+    # rick - get tts language from LanguageSetting
+    nav_instruction_voice_lang = str(self.params.get("LanguageSetting", encoding="utf-8"))
+
+    # Remove "main_" prefix
+    if nav_instruction_voice_lang.startswith("main_"):
+      nav_instruction_voice_lang = nav_instruction_voice_lang[5:]
+
+    # Convert to lowercase
+    nav_instruction_voice_lang = nav_instruction_voice_lang.lower()
+
+    # map language
+    if nav_instruction_voice_lang == "zh-cht":
+      nav_instruction_voice_lang = "zh_tw"
+    elif nav_instruction_voice_lang == "zh-chs":
+      nav_instruction_voice_lang = "zh_tw"
+    else:
+      if Params().get_bool("IsMetric"):
+        nav_instruction_voice_lang = "en_uk"
+      else:
+        nav_instruction_voice_lang = "en"
+    return nav_instruction_voice_lang
+
   def update(self):
     self.sm.update(0)
 
@@ -71,8 +109,12 @@ class RouteEngine:
         self.ui_pid = ui_pid[0]
 
     self.update_location()
-    self.recompute_route()
-    self.send_instruction()
+    try:
+      self.recompute_route()
+      self.send_instruction()
+      self.send_instruction_ext()
+    except Exception:
+      cloudlog.exception("navd.failed_to_compute")
 
   def update_location(self):
     location = self.sm['liveLocationKalman']
@@ -256,7 +298,10 @@ class RouteEngine:
     for i in range(self.step_idx + 1, len(self.route)):
       total_distance += self.route[i]['distance']
       total_time += self.route[i]['duration']
-      total_time_typical += self.route[i]['duration_typical']
+      if self.route[i]['duration_typical'] is None:
+        total_time_typical += self.route[i]['duration']
+      else:
+        total_time_typical += self.route[i]['duration_typical']
 
     msg.navInstruction.distanceRemaining = total_distance
     msg.navInstruction.timeRemaining = total_time
@@ -279,6 +324,7 @@ class RouteEngine:
       elif step['speedLimitSign'] == 'vienna':
         msg.navInstruction.speedLimitSign = log.NavInstruction.SpeedLimitSign.vienna
 
+    self._dp_cached_instruction = msg.navInstruction
     self.pm.send('navInstruction', msg)
 
     # Transition to next route segment
@@ -294,6 +340,63 @@ class RouteEngine:
         if dist > REROUTE_DISTANCE:
           self.params.remove("NavDestination")
           self.clear_route()
+
+
+  def send_instruction_ext(self):
+    msg = messaging.new_message('navInstructionExt', valid=True)
+
+    if self.step_idx is None:
+      msg.valid = False
+      self.pm.send('navInstructionExt', msg)
+      return
+
+    instruction = self._dp_cached_instruction
+    if instruction.maneuverType != "":
+      v_ego = self.sm['liveLocationKalman'].velocityCalibrated.value[0]
+      distance = round(instruction.maneuverDistance)
+      if self._dp_is_metric:
+        dist = round(distance / 1000, 1) if distance > 500 else round(50 * int(distance / 50), 1)
+        nav_instruction_text = str(dist) + ("km" if distance > 500 else "m")
+        nav_instruction_voice_activated = dist in (100, 500, 0.7, 1.5, 3.0)
+        if v_ego > 22.:  # 80 kph
+          nav_instruction_voice_activated = nav_instruction_voice_activated or dist == 300
+        else:
+          nav_instruction_voice_activated = nav_instruction_voice_activated or dist == 0
+      else:
+        feet = distance * METER_TO_FOOT
+        dist = round(distance * METER_TO_MILE, 1) if feet > 500 else round (50 * int(feet / 50), 1)
+        nav_instruction_text = str(dist) + ("mi" if feet > 500 else "ft")
+        nav_instruction_voice_activated = dist in (500, 0.5, 1.5, 3.0)
+        if v_ego > 22.:
+          nav_instruction_voice_activated = nav_instruction_voice_activated or dist in (150, 1.0)
+        else:
+          nav_instruction_voice_activated = nav_instruction_voice_activated or dist in (50, 250, 0.8)
+
+      nav_instruction_icon = "direction_" + instruction.maneuverType
+      if instruction.maneuverModifier != "":
+        nav_instruction_icon += "_" + instruction.maneuverModifier
+      nav_instruction_icon += ".png"
+      nav_instruction_icon = nav_instruction_icon.replace(' ', '_')
+
+      if self._dp_is_rhd_detected:
+        if 'left' in nav_instruction_icon:
+          nav_instruction_icon = nav_instruction_icon.replace('left', 'right')
+        elif 'right' in nav_instruction_icon:
+          nav_instruction_icon = nav_instruction_icon.replace('right', 'left')
+
+      if dist > 0.:
+        nav_instruction_voice_distance = self._dp_nav_instruction_voice_lang + "_distance_" + nav_instruction_text
+      else:
+        nav_instruction_voice_distance = ""
+      nav_instruction_voice_direction = self._dp_nav_instruction_voice_lang + "_" + nav_instruction_icon
+
+      msg.navInstructionExt.voiceDistance = nav_instruction_voice_distance if nav_instruction_voice_activated else ""
+      msg.navInstructionExt.voiceDirection = nav_instruction_voice_direction if nav_instruction_voice_activated else ""
+      msg.navInstructionExt.iconDistance = nav_instruction_text
+      msg.navInstructionExt.iconDirection = nav_instruction_icon
+
+    self.pm.send('navInstructionExt', msg)
+
 
   def send_route(self):
     coords = []
@@ -345,7 +448,7 @@ class RouteEngine:
 
 
 def main():
-  pm = messaging.PubMaster(['navInstruction', 'navRoute'])
+  pm = messaging.PubMaster(['navInstruction', 'navRoute', 'navInstructionExt'])
   sm = messaging.SubMaster(['liveLocationKalman', 'managerState'])
 
   rk = Ratekeeper(1.0)

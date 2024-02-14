@@ -38,6 +38,12 @@ CM_ "BO_ SECONDARY_STEER_ANGLE: ZSS is a high-precision steering angle sensor th
 BO_ 767 SDSU: 8 XXX
  SG_ FD_BUTTON : 7|1@0+ (1,0) [0|1] "" XXX
 
+BO_ 1880 DEBUG: 8 XXX
+ SG_ BLINDSPOTSIDE : 7|8@0+ (1,0) [0|255] "" XXX
+ SG_ BLINDSPOT : 38|1@0+ (1,0) [0|15] "" XXX
+ SG_ BLINDSPOTD1 : 47|8@0+ (1,0) [0|255] "" XXX
+ SG_ BLINDSPOTD2 : 55|8@0+ (1,0) [0|255] "" XXX
+
 CM_ "BO_ SDSU: The sDSU is a modified DSU for use in TSS1 Toyotas. Learn more: https://github.com/wocsor/panda/tree/smart_dsu";
 CM_ SG_ 767 FD_BUTTON "The follow distance button signal as forwarded by the sdsu";
 
@@ -425,12 +431,6 @@ BO_ 1592 DOOR_LOCKS: 8 XXX
  SG_ LOCK_STATUS_CHANGED : 15|1@0+ (1,0) [0|1] "" XXX
  SG_ LOCK_STATUS : 20|1@0+ (1,0) [0|1] "" XXX
  SG_ LOCKED_VIA_KEYFOB : 23|1@0+ (1,0) [0|1] "" XXX
-
-BO_ 1880 DEBUG: 8 XXX
- SG_ BLINDSPOTSIDE : 7|8@0+ (1,0) [0|255] "" XXX
- SG_ BLINDSPOT : 38|1@0+ (1,0) [0|15] "" XXX
- SG_ BLINDSPOTD1 : 47|8@0+ (1,0) [0|255] "" XXX
- SG_ BLINDSPOTD2 : 55|8@0+ (1,0) [0|255] "" XXX
 
 CM_ SG_ 36 YAW_RATE "verify";
 CM_ SG_ 36 ACCEL_X "x-axis accel";

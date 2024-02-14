@@ -77,7 +77,7 @@ class CarInterface(CarInterfaceBase):
       ret.tireStiffnessFactor = 0.444  # not optimized yet
       ret.mass = 2860. * CV.LB_TO_KG  # mean between normal and hybrid
 
-    elif candidate in (CAR.LEXUS_RX, CAR.LEXUS_RXH, CAR.LEXUS_RX_TSS2):
+    elif candidate in (CAR.LEXUS_RX, CAR.LEXUS_RX_TSS2):
       stop_and_go = True
       ret.wheelbase = 2.79
       ret.steerRatio = 16.  # 14.8 is spec end-to-end
@@ -99,7 +99,8 @@ class CarInterface(CarInterfaceBase):
       ret.tireStiffnessFactor = 0.7933
       ret.mass = 3400. * CV.LB_TO_KG  # mean between normal and hybrid
 
-    elif candidate in (CAR.HIGHLANDER, CAR.HIGHLANDERH, CAR.HIGHLANDER_TSS2):
+    elif candidate in (CAR.HIGHLANDER, CAR.HIGHLANDER_TSS2):
+      # TODO: TSS-P models can do stop and go, but unclear if it requires sDSU or unplugging DSU
       stop_and_go = True
       ret.wheelbase = 2.8194  # average of 109.8 and 112.2 in
       ret.steerRatio = 16.0
@@ -142,9 +143,7 @@ class CarInterface(CarInterfaceBase):
       ret.tireStiffnessFactor = 0.444  # not optimized yet
       ret.mass = 3060. * CV.LB_TO_KG
 
-    elif candidate in (CAR.LEXUS_ES, CAR.LEXUS_ESH, CAR.LEXUS_ES_TSS2):
-      if candidate not in (CAR.LEXUS_ES,):  # TODO: LEXUS_ES may have sng
-        stop_and_go = True
+    elif candidate in (CAR.LEXUS_ES, CAR.LEXUS_ES_TSS2):
       ret.wheelbase = 2.8702
       ret.steerRatio = 16.0  # not optimized
       ret.tireStiffnessFactor = 0.444  # not optimized yet
@@ -182,6 +181,12 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 14.7
       ret.tireStiffnessFactor = 0.444  # not optimized yet
       ret.mass = 4070 * CV.LB_TO_KG
+
+    elif candidate == CAR.LEXUS_LC_TSS2:
+      ret.wheelbase = 2.87
+      ret.steerRatio = 13.0
+      ret.tireStiffnessFactor = 0.444  # not optimized yet
+      ret.mass = 4500 * CV.LB_TO_KG
 
     elif candidate == CAR.PRIUS_TSS2:
       ret.wheelbase = 2.70002  # from toyota online sepc.
@@ -264,15 +269,13 @@ class CarInterface(CarInterfaceBase):
     dp_toyota_enhanced_long_tune = Params().get_bool("dp_toyota_enhanced_long_tune")
 
     tune = ret.longitudinalTuning
-    tune.deadzoneBP = [0., 9.]
-    tune.deadzoneV = [.0, .15]
+    tune.deadzoneBP = [0., 16., 20., 30.] if dp_toyota_enhanced_long_tune else [0., 9.]
+    tune.deadzoneV =  [0., .03, .06, .15] if dp_toyota_enhanced_long_tune else [.0, .15]
     if candidate in TSS2_CAR or ret.enableGasInterceptor:
       tune.kpBP = [0., 5., 20.]
-      tune.kpV = [1.3, 1.0, 0.7] if dp_toyota_enhanced_long_tune else [1.8, 1.0, 0.7]
-      #tune.kiBP = [0,   1,   2,    3,    4,    5.,    12.,  20.,   25.,  30.,  40.] if dp_toyota_enhanced_long_tune else [0., 5., 12., 20., 27.]
-      #tune.kiV = [.35,  .33, .31, .29, .27, .246,  .20, .167,  .10,  .01,  .001] if dp_toyota_enhanced_long_tune else [.35, .23, .20, .17, .1]
-      tune.kiBP = [0.,   1.,   2.,   5.,   12.,  20.,   23.,  30.,  40.] if dp_toyota_enhanced_long_tune else [0., 5., 12., 20., 27.]
-      tune.kiV = [.33,   .33,  .313, .245,  .215, .17,  .10,  .01,  .001]  if dp_toyota_enhanced_long_tune else [.35, .23, .20, .17, .1]
+      tune.kpV = [1.3, 1.0, 0.7]
+      tune.kiBP = [ 0.,  12.,  20.,  27.,  40.] if dp_toyota_enhanced_long_tune else [0., 5., 12., 20., 27.]
+      tune.kiV =  [.35,  .215, .195, .10, .01] if dp_toyota_enhanced_long_tune else [.35, .23, .20, .17, .1]
       if candidate in TSS2_CAR:
         ret.vEgoStopping = 0.1 if dp_toyota_enhanced_long_tune else 0.25 # car is near 0.1 to 0.2 when car starts requesting stopping accel
         ret.vEgoStarting = 0.1 if dp_toyota_enhanced_long_tune else 0.25 # needs to be > or == vEgoStopping

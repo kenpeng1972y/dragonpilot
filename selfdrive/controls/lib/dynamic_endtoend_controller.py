@@ -21,7 +21,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 #
-# Version = 2023-12-13
+# Version = 2024-1-29
 from common.numpy_fast import interp
 
 # d-e2e, from modeldata.h
@@ -32,8 +32,8 @@ LEAD_PROB = 0.6
 
 SLOW_DOWN_WINDOW_SIZE = 5
 SLOW_DOWN_PROB = 0.6
-SLOW_DOWN_BP = [0., 10., 20., 30., 40., 50., 55.]
-SLOW_DOWN_DIST = [10, 30., 50., 70., 80., 90., 120.]
+SLOW_DOWN_BP = [0., 10., 20., 30., 40., 50., 55., 60.]
+SLOW_DOWN_DIST = [20, 30., 50., 70., 80., 90., 105., 120.]
 
 SLOWNESS_WINDOW_SIZE = 20
 SLOWNESS_PROB = 0.6
@@ -98,7 +98,7 @@ class DynamicEndtoEndController:
     self._slowness_gmac = GenericMovingAverageCalculator(window_size=SLOWNESS_WINDOW_SIZE)
     self._has_slowness = False
 
-    self._has_nav_enabled = False
+    self._has_nav_instruction = False
 
     self._dangerous_ttc_gmac = GenericMovingAverageCalculator(window_size=DANGEROUS_TTC_WINDOW_SIZE)
     self._has_dangerous_ttc = False
@@ -121,7 +121,7 @@ class DynamicEndtoEndController:
     self._set_mode_timeout = 0
     pass
 
-  def _update(self, car_state, lead_one, md, controls_state):
+  def _update(self, car_state, lead_one, md, controls_state, maneuver_distance):
     self._v_ego_kph = car_state.vEgo * 3.6
     self._v_cruise_kph = controls_state.vCruise
     self._has_lead = lead_one.status
@@ -132,7 +132,7 @@ class DynamicEndtoEndController:
     self._has_mpc_fcw = self._mpc_fcw_gmac.get_moving_average() >= MPC_FCW_PROB
 
     # nav enable detection
-    self._has_nav_enabled = md.navEnabled
+    self._has_nav_instruction = maneuver_distance / max(car_state.vEgo, 1) < 13
 
     # lead detection
     self._lead_gmac.add_data(lead_one.status)
@@ -184,6 +184,11 @@ class DynamicEndtoEndController:
     # when mpc fcw crash prob is high
     # use blended to slow down quickly
     if self._has_mpc_fcw:
+      self._set_mode('blended')
+      return
+
+    # Nav enabled and distance to upcoming turning is 300 or below
+    if self._has_nav_instruction:
       self._set_mode('blended')
       return
 
@@ -260,11 +265,16 @@ class DynamicEndtoEndController:
       self._set_mode('acc')
       return
 
+    # Nav enabled and distance to upcoming turning is 300 or below
+    if self._has_nav_instruction:
+      self._set_mode('blended')
+      return
+
     self._set_mode('acc')
 
-  def get_mpc_mode(self, radar_unavailable, car_state, lead_one, md, controls_state):
+  def get_mpc_mode(self, radar_unavailable, car_state, lead_one, md, controls_state, maneuver_distance):
     if self._is_enabled:
-      self._update(car_state, lead_one, md, controls_state)
+      self._update(car_state, lead_one, md, controls_state, maneuver_distance)
       if radar_unavailable:
         self._blended_priority_mode()
       else:

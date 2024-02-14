@@ -25,7 +25,6 @@ def is_registered_device() -> bool:
 
 def register(show_spinner=False) -> Optional[str]:
   params = Params()
-  params.put("SubscriberInfo", HARDWARE.get_subscriber_info())
 
   IMEI = params.get("IMEI", encoding='utf8')
   HardwareSerial = params.get("HardwareSerial", encoding='utf8')
@@ -93,7 +92,7 @@ def register(show_spinner=False) -> Optional[str]:
 
   if dongle_id:
     params.put("DongleId", dongle_id)
-    set_offroad_alert("Offroad_UnofficialHardware", (dongle_id == UNREGISTERED_DONGLE_ID) and not PC)
+    # set_offroad_alert("Offroad_UnofficialHardware", (dongle_id == UNREGISTERED_DONGLE_ID) and not PC)
   return dongle_id
 
 

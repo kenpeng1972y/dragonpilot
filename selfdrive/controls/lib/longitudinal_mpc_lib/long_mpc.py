@@ -80,14 +80,14 @@ def get_T_FOLLOW(personality=log.LongitudinalPersonality.standard):
 
 def get_dynamic_follow(v_ego, personality=log.LongitudinalPersonality.standard):
   if personality==log.LongitudinalPersonality.relaxed:
-    x_vel =  [0.0,  5.55,  19.99, 20,   25,   40]
-    y_dist = [1.35,  1.5,   1.5,   1.7,  1.85, 2.0]
+    x_vel =  [0.0,  3.0,  8.33,  13.90,  20,    25,    40]
+    y_dist = [1.2,  1.25, 1.40,  1.40,   1.50,  1.85,  2.0]
   elif personality==log.LongitudinalPersonality.standard:
-    x_vel =  [0.0,  5.55,  19.99, 20,   25,   40]
-    y_dist = [1.25,  1.35,  1.35,  1.5,  1.5,  1.5]
+    x_vel =  [0.0,  3.0,  8.33,  13.90,  20,    25,    40]
+    y_dist = [1.00,  1.00, 1.20,  1.20,   1.25,  1.45,  1.5]
   elif personality==log.LongitudinalPersonality.aggressive:
-    x_vel =  [0.0,  2.0,   5.55,  19.99, 20,    25,   40]
-    y_dist = [1.0,  1.0,   1.08,  1.105,  1.11,  1.11, 1.2]
+    x_vel =  [0.0,  4.00, 8.33,  13.89,  20,    25,    40]
+    y_dist = [0.8,  0.80, 0.90,  0.90,   0.9,  1.105, 1.12]
   else:
     raise NotImplementedError("Dynamic Follow personality not supported")
   return np.interp(v_ego, x_vel, y_dist)
@@ -246,6 +246,7 @@ def gen_long_ocp():
 
 class LongitudinalMpc:
   def __init__(self, mode='acc'):
+    self.t_follow_offset = 1
     self.mode = mode
     self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
     self.reset()
@@ -298,6 +299,7 @@ class LongitudinalMpc:
 
   def set_weights(self, prev_accel_constraint=True, personality=log.LongitudinalPersonality.standard):
     jerk_factor = get_jerk_factor(personality)
+    jerk_factor /= np.mean(self.t_follow_offset)
     if self.mode == 'acc':
       a_change_cost = A_CHANGE_COST if prev_accel_constraint else 0
       cost_weights = [X_EGO_OBSTACLE_COST, X_EGO_COST, V_EGO_COST, A_EGO_COST, jerk_factor * a_change_cost, jerk_factor * J_EGO_COST]
@@ -376,6 +378,8 @@ class LongitudinalMpc:
       distance_factor = np.maximum(1, lead_xv_0[:,0] - (lead_xv_0[:,1] * t_follow))
       t_follow_offset = np.clip((v_ego - lead_xv_0[:,1]) - COMFORT_BRAKE, 1, distance_factor)
       t_follow = t_follow / t_follow_offset
+    else:
+      t_follow_offset = 1
 
     # To estimate a safe distance from a moving lead, we calculate how much stopping
     # distance that lead needs as a minimum. We can add that to the current distance

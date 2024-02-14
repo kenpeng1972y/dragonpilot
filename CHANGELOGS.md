@@ -1,4 +1,31 @@
-dragonpilot beta3 2023.12.23
+dragonpilot beta3 2024.02.13
+=======================
+* Comma 0.9.6 release
+  * New driving model (Los Angles V2)
+    * Vision model trained on more data
+    * Improved driving performance
+    * Directly outputs curvature for lateral control
+  * New driver monitoring model
+    * Trained on larger dataset
+  * AGNOS 9 (9.6)
+  * comma body streaming and controls over WebRTC
+  * Improved fuzzy fingerprinting for many makes and models
+  * Hyundai Staria 2023 support thanks to sunnyhaibin!
+  * Kia Niro Plug-in Hybrid 2022 support thanks to sunnyhaibin!
+  * Toyota RAV4 2023-24 support
+  * Toyota RAV4 Hybrid 2023-24 support
+* DP HIGHLIGHT:
+  * TSS2 long, Dynamic Follow and Accel profile tune has been updated.
+  * New version of dynamic e2e with twice and fast detection.
+    * De2e will now slow down for upcoming turns when using NOO.
+  * Auto lane change assist (USE IT AT YOUR OWN RISK).
+  * Optimized/Refactored NOO Voice Guidence.
+  * Re-added: Rainbow road path.
+  * Re-added: Full screen Nav.
+  * Re-added: Toyota Low Speed Override.
+  * Bug fixes and improvements.
+
+dragonpilot beta3 [2023.12.23]
 =======================
 * Comma 0.9.6 release
   * New driving model (Blue Diamond).
@@ -12,7 +39,7 @@ dragonpilot beta3 2023.12.23
   * Toyota RAV4 Hybrid 2023 support
 * DP HIGHLIGHT:
   * Flight Panel (compass, height, pitch).
-  * Model Confidence indicator (in the max speed box). 
+  * Model Confidence indicator (in the max speed box).
   * New version of dynamic e2e controller with better detection logic.
   * Adjustable lane change speed (default 20mph, OFF = no control during lane change)
   * TSS2 long, Dynamic Follow and Accel profile tune has been updated.

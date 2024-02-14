@@ -88,5 +88,3 @@ build/
 
 poetry.toml
 Pipfile
-
-third_party/mapd/

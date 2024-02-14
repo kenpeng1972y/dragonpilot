@@ -51,7 +51,7 @@ def limit_accel_in_turns(v_ego, angle_steers, a_target, CP):
 
 
 class LongitudinalPlanner:
-  def __init__(self, CP, init_v=0.0, init_a=0.0):
+  def __init__(self, CP, init_v=0.0, init_a=0.0, dt=DT_MDL):
     # DP:
     self.accel_controller = AccelController()
     self.dynamic_endtoend_controller = DynamicEndtoEndController()
@@ -62,9 +62,10 @@ class LongitudinalPlanner:
     self.CP = CP
     self.mpc = LongitudinalMpc()
     self.fcw = False
+    self.dt = dt
 
     self.a_desired = init_a
-    self.v_desired_filter = FirstOrderFilter(init_v, 2.0, DT_MDL)
+    self.v_desired_filter = FirstOrderFilter(init_v, 2.0, self.dt)
     self.v_model_error = 0.0
 
     self.v_desired_trajectory = np.zeros(CONTROL_N)
@@ -125,7 +126,7 @@ class LongitudinalPlanner:
     self.param_read_counter += 1
     if self.dynamic_endtoend_controller.is_enabled():
       self.dynamic_endtoend_controller.set_mpc_fcw_crash_cnt(self.mpc.crash_cnt)
-      self.mpc.mode = self.dynamic_endtoend_controller.get_mpc_mode(self.CP.radarUnavailable, sm['carState'], sm['radarState'].leadOne, sm['modelV2'], sm['controlsState'])
+      self.mpc.mode = self.dynamic_endtoend_controller.get_mpc_mode(self.CP.radarUnavailable, sm['carState'], sm['radarState'].leadOne, sm['modelV2'], sm['controlsState'], sm['navInstruction'].maneuverDistance)
     else:
       self.mpc.mode = 'blended' if sm['controlsState'].experimentalMode else 'acc'
 
@@ -204,8 +205,8 @@ class LongitudinalPlanner:
 
     # Interpolate 0.05 seconds and save as starting point for next iteration
     a_prev = self.a_desired
-    self.a_desired = float(interp(DT_MDL, ModelConstants.T_IDXS[:CONTROL_N], self.a_desired_trajectory))
-    self.v_desired_filter.x = self.v_desired_filter.x + DT_MDL * (self.a_desired + a_prev) / 2.0
+    self.a_desired = float(interp(self.dt, ModelConstants.T_IDXS[:CONTROL_N], self.a_desired_trajectory))
+    self.v_desired_filter.x = self.v_desired_filter.x + self.dt * (self.a_desired + a_prev) / 2.0
 
   def publish(self, sm, pm):
     plan_send = messaging.new_message('longitudinalPlan')

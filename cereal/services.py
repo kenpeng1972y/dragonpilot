@@ -58,7 +58,6 @@ services: dict[str, tuple] = {
   "liveLocationKalman": (True, 20., 5),
   "liveParameters": (True, 20., 5),
   "cameraOdometry": (True, 20., 5),
-  "lateralPlan": (True, 20., 5),
   "thumbnail": (True, 0.2, 1),
   "onroadEvents": (True, 1., 1),
   "carParams": (True, 0.02, 1),
@@ -104,6 +103,7 @@ services: dict[str, tuple] = {
   "longitudinalPlanExt": (False, 20., 5),
   "lateralPlanExt": (False, 20., 5),
   "controlsStateExt": (False, 100., 10),
+  "navInstructionExt": (False, 0.),
 }
 SERVICE_LIST = {name: Service(new_port(idx), *vals) for
                 idx, (name, vals) in enumerate(services.items())}

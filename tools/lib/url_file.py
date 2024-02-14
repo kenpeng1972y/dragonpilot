@@ -1,16 +1,18 @@
+import logging
 import os
+import socket
 import time
-import threading
-import pycurl
 from hashlib import sha256
-from io import BytesIO
-from tenacity import retry, wait_random_exponential, stop_after_attempt
+from urllib3 import PoolManager, Retry
+from urllib3.util import Timeout
+
 from openpilot.common.file_helpers import atomic_write_in_dir
 from openpilot.system.hardware.hw import Paths
 #  Cache chunk size
 K = 1000
 CHUNK_SIZE = 1000 * K
 
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 def hash_256(link):
   hsh = str(sha256((link.split("?")[0]).encode('utf-8')).hexdigest())
@@ -21,11 +23,23 @@ class URLFileException(Exception):
   pass
 
 
-class URLFile:
-  _tlocal = threading.local()
+def new_pool_manager() -> PoolManager:
+  socket_options = [(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),]
+  retries = Retry(total=5, backoff_factor=0.5, status_forcelist=[409, 429, 503, 504])
+  return PoolManager(num_pools=10, maxsize=100, socket_options=socket_options, retries=retries)
 
-  def __init__(self, url, debug=False, cache=None):
+
+def set_pool_manager():
+  URLFile._pool_manager = new_pool_manager()
+os.register_at_fork(after_in_child=set_pool_manager)
+
+
+class URLFile:
+  _pool_manager = new_pool_manager()
+
+  def __init__(self, url, timeout=10, debug=False, cache=None):
     self._url = url
+    self._timeout = Timeout(connect=timeout, read=timeout)
     self._pos = 0
     self._length = None
     self._local_file = None
@@ -35,10 +49,6 @@ class URLFile:
     if cache is not None:
       self._force_download = not cache
 
-    try:
-      self._curl = self._tlocal.curl
-    except AttributeError:
-      self._curl = self._tlocal.curl = pycurl.Curl()
     if not self._force_download:
       os.makedirs(Paths.download_cache_root(), exist_ok=True)
 
@@ -51,19 +61,15 @@ class URLFile:
       self._local_file.close()
       self._local_file = None
 
-  @retry(wait=wait_random_exponential(multiplier=1, max=5), stop=stop_after_attempt(3), reraise=True)
+  def _request(self, method, url, headers=None):
+    return URLFile._pool_manager.request(method, url, timeout=self._timeout, headers=headers)
+
   def get_length_online(self):
-    c = self._curl
-    c.reset()
-    c.setopt(pycurl.NOSIGNAL, 1)
-    c.setopt(pycurl.TIMEOUT_MS, 500000)
-    c.setopt(pycurl.FOLLOWLOCATION, True)
-    c.setopt(pycurl.URL, self._url)
-    c.setopt(c.NOBODY, 1)
-    c.perform()
-    length = int(c.getinfo(c.CONTENT_LENGTH_DOWNLOAD))
-    c.reset()
-    return length
+    response = self._request('HEAD', self._url)
+    if not (200 <= response.status <= 299):
+      return -1
+    length = response.headers.get('content-length', 0)
+    return int(length)
 
   def get_length(self):
     if self._length is not None:
@@ -114,10 +120,9 @@ class URLFile:
         self._pos = file_end
         return response
 
-  @retry(wait=wait_random_exponential(multiplier=1, max=5), stop=stop_after_attempt(3), reraise=True)
   def read_aux(self, ll=None):
     download_range = False
-    headers = ["Connection: keep-alive"]
+    headers = {}
     if self._pos != 0 or ll is not None:
       if ll is None:
         end = self.get_length() - 1
@@ -125,50 +130,28 @@ class URLFile:
         end = min(self._pos + ll, self.get_length()) - 1
       if self._pos >= end:
         return b""
-      headers.append(f"Range: bytes={self._pos}-{end}")
+      headers['Range'] = f"bytes={self._pos}-{end}"
       download_range = True
 
-    dats = BytesIO()
-    c = self._curl
-    c.setopt(pycurl.URL, self._url)
-    c.setopt(pycurl.WRITEDATA, dats)
-    c.setopt(pycurl.NOSIGNAL, 1)
-    c.setopt(pycurl.TIMEOUT_MS, 500000)
-    c.setopt(pycurl.HTTPHEADER, headers)
-    c.setopt(pycurl.FOLLOWLOCATION, True)
-
     if self._debug:
-      print("downloading", self._url)
-
-      def header(x):
-        if b'MISS' in x:
-          print(x.strip())
-
-      c.setopt(pycurl.HEADERFUNCTION, header)
-
-      def test(debug_type, debug_msg):
-       print("  debug(%d): %s" % (debug_type, debug_msg.strip()))
-
-      c.setopt(pycurl.VERBOSE, 1)
-      c.setopt(pycurl.DEBUGFUNCTION, test)
       t1 = time.time()
 
-    c.perform()
+    response = self._request('GET', self._url, headers=headers)
+    ret = response.data
 
     if self._debug:
       t2 = time.time()
       if t2 - t1 > 0.1:
-        print(f"get {self._url} {headers!r} {t2 - t1:.f} slow")
+        print(f"get {self._url} {headers!r} {t2 - t1:.3f} slow")
 
-    response_code = c.getinfo(pycurl.RESPONSE_CODE)
+    response_code = response.status
     if response_code == 416:  # Requested Range Not Satisfiable
-      raise URLFileException(f"Error, range out of bounds {response_code} {headers} ({self._url}): {repr(dats.getvalue())[:500]}")
+      raise URLFileException(f"Error, range out of bounds {response_code} {headers} ({self._url}): {repr(ret)[:500]}")
     if download_range and response_code != 206:  # Partial Content
-      raise URLFileException(f"Error, requested range but got unexpected response {response_code} {headers} ({self._url}): {repr(dats.getvalue())[:500]}")
+      raise URLFileException(f"Error, requested range but got unexpected response {response_code} {headers} ({self._url}): {repr(ret)[:500]}")
     if (not download_range) and response_code != 200:  # OK
-      raise URLFileException(f"Error {response_code} {headers} ({self._url}): {repr(dats.getvalue())[:500]}")
+      raise URLFileException(f"Error {response_code} {headers} ({self._url}): {repr(ret)[:500]}")
 
-    ret = dats.getvalue()
     self._pos += len(ret)
     return ret
 

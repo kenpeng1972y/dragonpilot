@@ -2,7 +2,6 @@
 import datetime
 import os
 import signal
-import subprocess
 import sys
 import traceback
 from typing import List, Tuple, Union
@@ -10,12 +9,10 @@ from typing import List, Tuple, Union
 from cereal import log
 import cereal.messaging as messaging
 import openpilot.selfdrive.sentry as sentry
-from openpilot.common.basedir import BASEDIR
 from openpilot.common.params import Params, ParamKeyType
 from openpilot.common.text_window import TextWindow
-from openpilot.selfdrive.boardd.set_time import set_time
 from openpilot.system.hardware import HARDWARE, PC
-from openpilot.selfdrive.manager.helpers import unblock_stdout, write_onroad_params
+from openpilot.selfdrive.manager.helpers import unblock_stdout, write_onroad_params, save_bootlog
 from openpilot.selfdrive.manager.process import ensure_running
 from openpilot.selfdrive.manager.process_config import managed_processes
 from openpilot.selfdrive.athena.registration import register, UNREGISTERED_DONGLE_ID, is_registered_device
@@ -25,13 +22,10 @@ from openpilot.system.version import is_dirty, get_commit, get_version, get_orig
                            is_tested_branch, is_release_branch
 
 import json
+from openpilot.selfdrive.car.fingerprints import all_known_cars, all_legacy_fingerprint_cars
 
 def manager_init() -> None:
-  # update system time from panda
-  set_time(cloudlog)
-
-  # save boot log
-  subprocess.call("./bootlog", cwd=os.path.join(BASEDIR, "system/loggerd"))
+  save_bootlog()
 
   params = Params()
   params.clear_all(ParamKeyType.CLEAR_ON_MANAGER_START)
@@ -50,6 +44,7 @@ def manager_init() -> None:
     ("LongitudinalPersonality", str(log.LongitudinalPersonality.standard)),
 
     # dp
+    ("dp_device_is_clone", "0"),
     ("dp_alka", "0"),
     ("dp_device_ip_addr", ""),
     ("dp_device_auto_shutdown", "0"),
@@ -79,12 +74,16 @@ def manager_init() -> None:
     ("dp_long_personality_btn", "0"),
     ("dp_disable_onroad_uploads", "0"),
     ("dp_long_frogai_smooth_braking_tune", "0"),
-    ("dp_lat_lane_change_assist_speed", "32"),
+    ("dp_lat_lane_change_assist_speed", "20"),
     ("dp_device_display_flight_panel", "0"),
     ("dp_mapd_vision_turn_control", "0"),
-    ("dp_lat_lane_priority_mode", "0"),
-    ("dp_lat_lane_priority_mode_speed_based", "0"),
+    #("dp_lat_lane_priority_mode", "0"),
+    #("dp_lat_lane_priority_mode_speed_based", "0"),
     ("dp_nav_full_screen", "0"),
+    ("dp_toyota_cruise_override", "0"),
+    ("dp_toyota_cruise_override_speed", "30"),
+    ("dp_ui_rainbow", "0"),
+    ("dp_auto_lane_change", "0"),
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))
@@ -99,13 +98,6 @@ def manager_init() -> None:
     if params.get(k) is None:
       params.put(k, v)
 
-  # is this dashcam?
-  if os.getenv("PASSIVE") is not None:
-    params.put_bool("Passive", bool(int(os.getenv("PASSIVE", "0"))))
-
-  if params.get("Passive") is None:
-    raise Exception("Passive must be set to continue")
-
   # Create folders needed for msgq
   try:
     os.mkdir("/dev/shm")
@@ -118,9 +110,9 @@ def manager_init() -> None:
   params.put("Version", get_version())
   params.put("TermsVersion", terms_version)
   params.put("TrainingVersion", training_version)
-  params.put("GitCommit", get_commit(default=""))
-  params.put("GitBranch", get_short_branch(default=""))
-  params.put("GitRemote", get_origin(default=""))
+  params.put("GitCommit", get_commit())
+  params.put("GitBranch", get_short_branch())
+  params.put("GitRemote", get_origin())
   params.put_bool("IsTestedBranch", is_tested_branch())
   params.put_bool("IsReleaseBranch", is_release_branch())
 
@@ -132,6 +124,9 @@ def manager_init() -> None:
     serial = params.get("HardwareSerial")
     raise Exception(f"Registration failed for device {serial}")
   os.environ['DONGLE_ID'] = dongle_id  # Needed for swaglog
+  os.environ['GIT_ORIGIN'] = get_normalized_origin() # Needed for swaglog
+  os.environ['GIT_BRANCH'] = get_short_branch() # Needed for swaglog
+  os.environ['GIT_COMMIT'] = get_commit() # Needed for swaglog
 
   if not is_dirty():
     os.environ['CLEAN'] = '1'
@@ -146,8 +141,7 @@ def manager_init() -> None:
                        dirty=is_dirty(),
                        device=HARDWARE.get_device_type())
 
-
-def manager_prepare() -> None:
+  # preimport all processes
   for p in managed_processes.values():
     p.prepare()
 
@@ -186,9 +180,12 @@ def manager_thread() -> None:
     ignore += ["otisserv"]
 
   dpdmonitoringd_ignored = True
-  if not is_registered_device():
+  dp_device_dm_unavailable = params.get_bool("dp_device_dm_unavailable")
+  dp_device_is_clone = not is_registered_device()
+  params.put_bool("dp_device_is_clone", dp_device_is_clone)
+  if dp_device_is_clone or dp_device_dm_unavailable:
     ignore += ["uploader"]
-    if params.get_bool("dp_device_dm_unavailable"):
+    if dp_device_dm_unavailable:
       ignore += ["dmonitoringd", "dmonitoringmodeld"]
       dpdmonitoringd_ignored = False
   if dpdmonitoringd_ignored:
@@ -232,8 +229,10 @@ def manager_thread() -> None:
 
     # Exit main loop when uninstall/shutdown/reboot is needed
     shutdown = False
-    for param in ("DoUninstall", "DoShutdown", "DoReboot"):
+    for param in ("DoUninstall", "DoShutdown", "DoReboot", "dp_device_reset_conf"):
       if params.get_bool(param):
+        if param == "dp_device_reset_conf":
+          os.system("rm -fr /data/params/d/dp_*")
         shutdown = True
         params.put("LastManagerExitReason", f"{param} {datetime.datetime.now()}")
         cloudlog.warning(f"Shutting down manager - {param} set")
@@ -243,17 +242,8 @@ def manager_thread() -> None:
 
 
 def main() -> None:
-  prepare_only = os.getenv("PREPAREONLY") is not None
-
   manager_init()
-
-  # Start UI early so prepare can happen in the background
-  if not prepare_only:
-    managed_processes['ui'].start()
-
-  manager_prepare()
-
-  if prepare_only:
+  if os.getenv("PREPAREONLY") is not None:
     return
 
   # SystemExit on sigterm
@@ -279,27 +269,16 @@ def main() -> None:
     HARDWARE.shutdown()
 
 def get_support_car_list():
-  attrs = ['FINGERPRINTS', 'FW_VERSIONS']
   cars = dict({"cars": []})
-  models = []
-  for car_folder in [x[0] for x in os.walk('/data/openpilot/selfdrive/car')]:
-    try:
-      car_name = car_folder.split('/')[-1]
-      if car_name not in ("mock", "body", "torque_data", "tests"):
-        for attr in attrs:
-          values = __import__('selfdrive.car.%s.values' % car_name, fromlist=[attr])
-          if hasattr(values, attr):
-            attr_values = getattr(values, attr)
-          else:
-            continue
-          if isinstance(attr_values, dict):
-            for f, v in attr_values.items():
-              if f not in models:
-                models.append(f)
-    except (ImportError, IOError, ValueError):
-      pass
-  models.sort()
-  cars["cars"] = models
+  list = []
+  for car in all_known_cars():
+    list.append(str(car))
+
+  for car in all_legacy_fingerprint_cars():
+    name = str(car)
+    if name not in list:
+      list.append(name)
+  cars["cars"] = sorted(list)
   return json.dumps(cars)
 
 if __name__ == "__main__":
@@ -307,6 +286,8 @@ if __name__ == "__main__":
 
   try:
     main()
+  except KeyboardInterrupt:
+    print("got CTRL-C, exiting")
   except Exception:
     add_file_handler(cloudlog)
     cloudlog.exception("Manager failed to start")

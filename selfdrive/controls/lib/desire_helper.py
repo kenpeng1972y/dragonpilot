@@ -2,30 +2,30 @@ from cereal import log
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.realtime import DT_MDL
 
-LaneChangeState = log.LateralPlan.LaneChangeState
-LaneChangeDirection = log.LateralPlan.LaneChangeDirection
+LaneChangeState = log.LaneChangeState
+LaneChangeDirection = log.LaneChangeDirection
 
 LANE_CHANGE_SPEED_MIN = 20 * CV.MPH_TO_MS
 LANE_CHANGE_TIME_MAX = 10.
 
 DESIRES = {
   LaneChangeDirection.none: {
-    LaneChangeState.off: log.LateralPlan.Desire.none,
-    LaneChangeState.preLaneChange: log.LateralPlan.Desire.none,
-    LaneChangeState.laneChangeStarting: log.LateralPlan.Desire.none,
-    LaneChangeState.laneChangeFinishing: log.LateralPlan.Desire.none,
+    LaneChangeState.off: log.Desire.none,
+    LaneChangeState.preLaneChange: log.Desire.none,
+    LaneChangeState.laneChangeStarting: log.Desire.none,
+    LaneChangeState.laneChangeFinishing: log.Desire.none,
   },
   LaneChangeDirection.left: {
-    LaneChangeState.off: log.LateralPlan.Desire.none,
-    LaneChangeState.preLaneChange: log.LateralPlan.Desire.none,
-    LaneChangeState.laneChangeStarting: log.LateralPlan.Desire.laneChangeLeft,
-    LaneChangeState.laneChangeFinishing: log.LateralPlan.Desire.laneChangeLeft,
+    LaneChangeState.off: log.Desire.none,
+    LaneChangeState.preLaneChange: log.Desire.none,
+    LaneChangeState.laneChangeStarting: log.Desire.laneChangeLeft,
+    LaneChangeState.laneChangeFinishing: log.Desire.laneChangeLeft,
   },
   LaneChangeDirection.right: {
-    LaneChangeState.off: log.LateralPlan.Desire.none,
-    LaneChangeState.preLaneChange: log.LateralPlan.Desire.none,
-    LaneChangeState.laneChangeStarting: log.LateralPlan.Desire.laneChangeRight,
-    LaneChangeState.laneChangeFinishing: log.LateralPlan.Desire.laneChangeRight,
+    LaneChangeState.off: log.Desire.none,
+    LaneChangeState.preLaneChange: log.Desire.none,
+    LaneChangeState.laneChangeStarting: log.Desire.laneChangeRight,
+    LaneChangeState.laneChangeFinishing: log.Desire.laneChangeRight,
   },
 }
 
@@ -38,12 +38,13 @@ class DesireHelper:
     self.lane_change_ll_prob = 1.0
     self.keep_pulse_timer = 0.0
     self.prev_one_blinker = False
-    self.desire = log.LateralPlan.Desire.none
+    self.desire = log.Desire.none
 
-  def update(self, carstate, lateral_active, lane_change_prob, edge_detected_left, edge_detected_right, dp_lat_lane_change_assist_speed):
+  def update(self, carstate, lateral_active, lane_change_prob, dp_lat_lane_change_assist_speed, dp_auto_lane_change, edge_detected_left, edge_detected_right):
     v_ego = carstate.vEgo
     one_blinker = carstate.leftBlinker != carstate.rightBlinker
     below_lane_change_speed = v_ego < dp_lat_lane_change_assist_speed if dp_lat_lane_change_assist_speed > 0 else True
+    dp_auto_lane_change_allowed = dp_lat_lane_change_assist_speed > 0
 
     if not lateral_active or self.lane_change_timer > LANE_CHANGE_TIME_MAX:
       self.lane_change_state = LaneChangeState.off
@@ -66,6 +67,8 @@ class DesireHelper:
 
         blindspot_detected = (((edge_detected_left or carstate.leftBlindspot) and self.lane_change_direction == LaneChangeDirection.left) or
                               ((edge_detected_right or carstate.rightBlindspot) and self.lane_change_direction == LaneChangeDirection.right))
+        if dp_auto_lane_change and dp_auto_lane_change_allowed:
+          torque_applied = True
 
         if not one_blinker or below_lane_change_speed:
           self.lane_change_state = LaneChangeState.off
@@ -93,6 +96,8 @@ class DesireHelper:
             self.lane_change_state = LaneChangeState.preLaneChange
           else:
             self.lane_change_state = LaneChangeState.off
+          if one_blinker and dp_auto_lane_change:
+            self.lane_change_state = LaneChangeState.laneChangeFinishing
 
     if self.lane_change_state in (LaneChangeState.off, LaneChangeState.preLaneChange):
       self.lane_change_timer = 0.0
@@ -110,5 +115,5 @@ class DesireHelper:
       self.keep_pulse_timer += DT_MDL
       if self.keep_pulse_timer > 1.0:
         self.keep_pulse_timer = 0.0
-      elif self.desire in (log.LateralPlan.Desire.keepLeft, log.LateralPlan.Desire.keepRight):
-        self.desire = log.LateralPlan.Desire.none
+      elif self.desire in (log.Desire.keepLeft, log.Desire.keepRight):
+        self.desire = log.Desire.none

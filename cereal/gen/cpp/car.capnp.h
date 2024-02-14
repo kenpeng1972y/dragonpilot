@@ -6,10 +6,14 @@
 #include <capnp/generated-header-support.h>
 #include <kj/windows-sanity.h>
 
-#if CAPNP_VERSION != 8000
+#ifndef CAPNP_VERSION
+#error "CAPNP_VERSION is not defined, is capnp/generated-header-support.h missing?"
+#elif CAPNP_VERSION != 1000002
 #error "Version mismatch between generated code and library headers.  You must use the same version of the Cap'n Proto compiler and library."
 #endif
 
+
+CAPNP_BEGIN_HEADER
 
 namespace capnp {
 namespace schemas {
@@ -49,7 +53,7 @@ enum class EventName_baa8c5d505f727de: uint16_t {
   PARK_BRAKE,
   MANUAL_RESTART,
   LOW_SPEED_LOCKOUT,
-  PLANNER_ERROR,
+  PLANNER_ERROR_D_E_P_R_E_C_A_T_E_D,
   IPAS_OVERRIDE_D_E_P_R_E_C_A_T_E_D,
   JOYSTICK_DEBUG,
   STEER_TEMP_UNAVAILABLE_SILENT,
@@ -265,7 +269,7 @@ CAPNP_DECLARE_SCHEMA(d661512be2def77f);
 enum class SteerControlType_d661512be2def77f: uint16_t {
   TORQUE,
   ANGLE,
-  CURVATURE,
+  CURVATURE_D_E_P_R_E_C_A_T_E_D,
 };
 CAPNP_DECLARE_ENUM(SteerControlType, d661512be2def77f);
 CAPNP_DECLARE_SCHEMA(8f162eeb14bfc0ec);
@@ -8852,4 +8856,6 @@ inline ::capnp::Orphan< ::cereal::CarParams::LateralTorqueTuning> CarParams::Lat
 }
 
 }  // namespace
+
+CAPNP_END_HEADER
 

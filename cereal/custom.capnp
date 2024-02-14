@@ -65,7 +65,11 @@ struct ControlsStateExt @0xda96579883444c35 {
   alkaEnabled @1 :Bool;
 }
 
-struct CustomReserved4 @0x80ae746ee2596b11 {
+struct NavInstructionExt @0x80ae746ee2596b11 {
+  voiceDistance @0: Text;
+  voiceDirection @1: Text;
+  iconDistance @2: Text;
+  iconDirection @3: Text;
 }
 
 struct CustomReserved5 @0xa5cd762cd951a455 {

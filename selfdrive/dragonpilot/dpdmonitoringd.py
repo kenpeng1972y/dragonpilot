@@ -9,9 +9,7 @@ from openpilot.selfdrive.controls.lib.events import Events
 
 
 def dmonitoringd_thread(sm=None, pm=None):
-  params = Params()
-  params.put_bool("DmModelInitialized", True)
-  is_rhd_detected = params.get_bool("IsRhdDetected")
+  Params().put_bool("DmModelInitialized", True);
   gc.disable()
   set_realtime_priority(2)
 
@@ -33,7 +31,6 @@ def dmonitoringd_thread(sm=None, pm=None):
       "faceDetected": True,
       "isDistracted": False,
       "awarenessStatus": 1.,
-      "isRHD": is_rhd_detected,
     }
     pm.send('driverMonitoringState', dat)
     time.sleep(DT_DMON)

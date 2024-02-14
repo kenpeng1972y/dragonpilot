@@ -130,8 +130,9 @@ struct InitData {
 
 struct FrameData {
   frameId @0 :UInt32;
-  encodeId @1 :UInt32; # DEPRECATED
   frameIdSensor @25 :UInt32;
+  requestId @28 :UInt32;
+  encodeId @1 :UInt32;
 
   frameType @7 :FrameType;
 
@@ -296,6 +297,29 @@ struct GpsLocationData {
     trimble @7;
     qcomdiag @8;
   }
+}
+
+enum Desire {
+  none @0;
+  turnLeft @1;
+  turnRight @2;
+  laneChangeLeft @3;
+  laneChangeRight @4;
+  keepLeft @5;
+  keepRight @6;
+}
+
+enum LaneChangeState {
+  off @0;
+  preLaneChange @1;
+  laneChangeStarting @2;
+  laneChangeFinishing @3;
+}
+
+enum LaneChangeDirection {
+  none @0;
+  left @1;
+  right @2;
 }
 
 struct CanData {
@@ -494,6 +518,7 @@ struct PandaState @0xa7649e2575e4591e {
     redPanda @7;
     redPandaV2 @8;
     tres @9;
+    cuatro @10;
   }
 
   enum HarnessStatus {
@@ -667,7 +692,6 @@ struct ControlsState @0x97ff69c53601abf1 {
   aTarget @35 :Float32;
   curvature @37 :Float32;  # path curvature from vehicle model
   desiredCurvature @61 :Float32;  # lag adjusted curvatures used by lateral controllers
-  desiredCurvatureRate @62 :Float32;
   forceDecel @51 :Bool;
 
   # UI alerts
@@ -689,8 +713,8 @@ struct ControlsState @0x97ff69c53601abf1 {
     angleState @58 :LateralAngleState;
     debugState @59 :LateralDebugState;
     torqueState @60 :LateralTorqueState;
-    curvatureState @65 :LateralCurvatureState;
 
+    curvatureStateDEPRECATED @65 :LateralCurvatureState;
     lqrStateDEPRECATED @55 :LateralLQRState;
   }
 
@@ -825,6 +849,7 @@ struct ControlsState @0x97ff69c53601abf1 {
   steerOverrideDEPRECATED @20 :Bool;
   steeringAngleDesiredDegDEPRECATED @29 :Float32;
   canMonoTimesDEPRECATED @21 :List(UInt64);
+  desiredCurvatureRateDEPRECATED @62 :Float32;
 }
 
 # All SI units and in device frame
@@ -876,7 +901,8 @@ struct ModelDataV2 {
   locationMonoTime @24 :UInt64;
 
   # e2e lateral planner
-  lateralPlannerSolution @25: LateralPlannerSolution;
+  lateralPlannerSolutionDEPRECATED @25: LateralPlannerSolution;
+  action @26: Action;
 
   struct LeadDataV2 {
     prob @0 :Float32; # probability that car is your lead at time t
@@ -914,6 +940,9 @@ struct ModelDataV2 {
     desireState @5 :List(Float32);
     disengagePredictions @6 :DisengagePredictions;
     hardBrakePredicted @7 :Bool;
+    laneChangeState @8 :LaneChangeState;
+    laneChangeDirection @9 :LaneChangeDirection;
+
 
     # deprecated
     brakeDisengageProbDEPRECATED @2 :Float32;
@@ -955,6 +984,9 @@ struct ModelDataV2 {
     yawRateStd @7 :List(Float32);
   }
 
+  struct Action {
+    desiredCurvature @0 :Float32;
+  }
 }
 
 struct EncodeIndex {
@@ -2168,6 +2200,8 @@ struct EncodeData {
   data @1 :Data;
   header @2 :Data;
   unixTimestampNanos @3 :UInt64;
+  width @4 :UInt32;
+  height @5 :UInt32;
 }
 
 struct UserFlag {
@@ -2215,7 +2249,6 @@ struct Event {
     carState @22 :Car.CarState;
     carControl @23 :Car.CarControl;
     longitudinalPlan @24 :LongitudinalPlan;
-    lateralPlan @64 :LateralPlan;
     uiPlan @106 :UiPlan;
     ubloxGnss @34 :UbloxGnss;
     ubloxRaw @39 :Data;
@@ -2291,7 +2324,7 @@ struct Event {
     longitudinalPlanExt @108 :Custom.LongitudinalPlanExt;
     lateralPlanExt @109 :Custom.LateralPlanExt;
     controlsStateExt @110 :Custom.ControlsStateExt;
-    customReserved4 @111 :Custom.CustomReserved4;
+    navInstructionExt @111 :Custom.NavInstructionExt;
     customReserved5 @112 :Custom.CustomReserved5;
     customReserved6 @113 :Custom.CustomReserved6;
     customReserved7 @114 :Custom.CustomReserved7;
@@ -2336,5 +2369,6 @@ struct Event {
     pandaStateDEPRECATED @12 :PandaState;
     driverStateDEPRECATED @59 :DriverStateDEPRECATED;
     sensorEventsDEPRECATED @11 :List(SensorEventData);
+    lateralPlanDEPRECATED @64 :LateralPlan;
   }
 }

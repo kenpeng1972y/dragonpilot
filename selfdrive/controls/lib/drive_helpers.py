@@ -3,8 +3,7 @@ import math
 from cereal import car, log
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.numpy_fast import clip, interp
-from openpilot.common.realtime import DT_MDL
-from openpilot.selfdrive.modeld.constants import ModelConstants
+from openpilot.common.realtime import DT_CTRL
 
 # WARNING: this value was determined based on the model's training distribution,
 #          model predictions above this speed can be unpredictable
@@ -22,7 +21,6 @@ CAR_ROTATION_RADIUS = 0.0
 
 # EU guidelines
 MAX_LATERAL_JERK = 5.0
-
 MAX_VEL_ERR = 5.0
 
 ButtonEvent = car.CarState.ButtonEvent
@@ -37,15 +35,6 @@ CRUISE_INTERVAL_SIGN = {
   ButtonType.decelCruise: -1,
 }
 
-# mapd
-# Constants for Limit controllers.
-LIMIT_ADAPT_ACC = -1.  # m/s^2 Ideal acceleration for the adapting (braking) phase when approaching speed limits.
-LIMIT_MIN_ACC = -1.5  # m/s^2 Maximum deceleration allowed for limit controllers to provide.
-LIMIT_MAX_ACC = 1.0   # m/s^2 Maximum acelration allowed for limit controllers to provide while active.
-LIMIT_MIN_SPEED = 8.33  # m/s, Minimum speed limit to provide as solution on limit controllers.
-LIMIT_SPEED_OFFSET_TH = -1.  # m/s Maximum offset between speed limit and current speed for adapting state.
-LIMIT_MAX_MAP_DATA_AGE = 10.  # s Maximum time to hold to map data, then consider it invalid inside limits controllers.
-
 class VCruiseHelper:
   def __init__(self, CP):
     self.CP = CP
@@ -54,12 +43,15 @@ class VCruiseHelper:
     self.v_cruise_kph_last = 0
     self.button_timers = {ButtonType.decelCruise: 0, ButtonType.accelCruise: 0}
     self.button_change_states = {btn: {"standstill": False, "enabled": False} for btn in self.button_timers}
+    self.dp_override_v_cruise_kph = V_CRUISE_UNSET
+    self.dp_override_cruise_speed_last = V_CRUISE_UNSET
+    self.dp_override_enabled_last = False
 
   @property
   def v_cruise_initialized(self):
     return self.v_cruise_kph != V_CRUISE_UNSET
 
-  def update_v_cruise(self, CS, enabled, is_metric):
+  def update_v_cruise(self, CS, enabled, is_metric, dp_override_speed):
     self.v_cruise_kph_last = self.v_cruise_kph
 
     if CS.cruiseState.available:
@@ -69,9 +61,29 @@ class VCruiseHelper:
         self.v_cruise_cluster_kph = self.v_cruise_kph
         self.update_button_timers(CS, enabled)
       else:
-        self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
-        self.v_cruise_cluster_kph = CS.cruiseState.speedCluster * CV.MS_TO_KPH
+        if enabled and dp_override_speed and CS.cruiseState.speed * CV.MS_TO_KPH < dp_override_speed:
+          if self.dp_override_v_cruise_kph == V_CRUISE_UNSET:
+            self.dp_override_v_cruise_kph = max(CS.vEgo * CV.MS_TO_KPH, V_CRUISE_MIN)
+        else:
+          self.dp_override_v_cruise_kph = V_CRUISE_UNSET
+
+        # when we have an override_speed, use it
+        if self.dp_override_v_cruise_kph != V_CRUISE_UNSET:
+          self.v_cruise_kph = self.dp_override_v_cruise_kph
+          self.v_cruise_cluster_kph = self.dp_override_v_cruise_kph
+        else:
+          self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
+          self.v_cruise_cluster_kph = CS.cruiseState.speedCluster * CV.MS_TO_KPH
+
+          #print("dp_override_v_cruise_kph:", self.dp_override_v_cruise_kph)
+          #print("v_cruise_kph:", self.v_cruise_kph)
+          #print("v_cruise_cluster_kph:", self.v_cruise_cluster_kph)
+
+        self.dp_override_cruise_speed_last = CS.cruiseState.speed
+        self.dp_override_enabled_last = enabled
+
     else:
+      self.dp_override_v_cruise_kph = V_CRUISE_UNSET
       self.v_cruise_kph = V_CRUISE_UNSET
       self.v_cruise_cluster_kph = V_CRUISE_UNSET
 
@@ -171,35 +183,14 @@ def rate_limit(new_value, last_value, dw_step, up_step):
   return clip(new_value, last_value + dw_step, last_value + up_step)
 
 
-def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates):
-  if len(psis) != CONTROL_N:
-    psis = [0.0]*CONTROL_N
-    curvatures = [0.0]*CONTROL_N
-    curvature_rates = [0.0]*CONTROL_N
+def clip_curvature(v_ego, prev_curvature, new_curvature):
   v_ego = max(MIN_SPEED, v_ego)
-
-  # TODO this needs more thought, use .2s extra for now to estimate other delays
-  delay = CP.steerActuatorDelay + .2
-
-  # MPC can plan to turn the wheel and turn back before t_delay. This means
-  # in high delay cases some corrections never even get commanded. So just use
-  # psi to calculate a simple linearization of desired curvature
-  current_curvature_desired = curvatures[0]
-  psi = interp(delay, ModelConstants.T_IDXS[:CONTROL_N], psis)
-  average_curvature_desired = psi / (v_ego * delay)
-  desired_curvature = 2 * average_curvature_desired - current_curvature_desired
-
-  # This is the "desired rate of the setpoint" not an actual desired rate
-  desired_curvature_rate = curvature_rates[0]
   max_curvature_rate = MAX_LATERAL_JERK / (v_ego**2) # inexact calculation, check https://github.com/commaai/openpilot/pull/24755
-  safe_desired_curvature_rate = clip(desired_curvature_rate,
-                                     -max_curvature_rate,
-                                     max_curvature_rate)
-  safe_desired_curvature = clip(desired_curvature,
-                                current_curvature_desired - max_curvature_rate * DT_MDL,
-                                current_curvature_desired + max_curvature_rate * DT_MDL)
+  safe_desired_curvature = clip(new_curvature,
+                                prev_curvature - max_curvature_rate * DT_CTRL,
+                                prev_curvature + max_curvature_rate * DT_CTRL)
 
-  return safe_desired_curvature, safe_desired_curvature_rate
+  return safe_desired_curvature
 
 
 def get_friction(lateral_accel_error: float, lateral_accel_deadzone: float, friction_threshold: float,
